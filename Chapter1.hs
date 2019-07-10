@@ -84,8 +84,10 @@ hurry_coward3 (f, g) e =
     Left  b -> f b
     Right c -> g c
 
-hurry_coward4 :: Either b c -> a -> ((b -> a), (c -> a))
-hurry_coward4 _ v = (,) (\_ -> v) (\_ -> v)
+hurry_coward4 :: (Either b c -> a) -> ((b -> a), (c -> a))
+--hurry_coward4 _ v = (,) (\_ -> v) (\_ -> v)
+hurry_coward4 f = (,) (\x -> f $ Left x) (\y -> f $ Right y)
+  
 
 -- | (a x b) ^ c = (a ^ c) x (b ^ c)
 -- c -> (a, b) ~ ((c -> a), (c -> b))
