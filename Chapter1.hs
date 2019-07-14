@@ -92,9 +92,10 @@ hurry_coward4 f = (,) (\x -> f $ Left x) (\y -> f $ Right y)
 -- | (a x b) ^ c = (a ^ c) x (b ^ c)
 -- c -> (a, b) ~ ((c -> a), (c -> b))
 
-hurry_coward5 :: c -> (a, b) -> ((c -> a), (c -> b))
-hurry_coward5 _ (v', v'') = (,) (\_ -> v') (\_ -> v'')
-
-hurry_coward6 :: ((c -> a), (c -> b)) -> c -> (a, b)
-hurry_coward6 (f, g) v = (f v, g v)
+hurry_coward5 :: (c -> (a, b)) -> ((c -> a), (c -> b))
+--hurry_coward5 _ (v', v'') = (,) (\_ -> v') (\_ -> v'')
+hurry_coward5 f = (,) (\x -> fst $ f x) (\y -> snd $ f y)
+  
+hurry_coward6 :: (c -> a) -> (c -> b) -> c -> (a, b)
+hurry_coward6 f g v = (f v, g v)
 
