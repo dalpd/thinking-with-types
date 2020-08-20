@@ -2,7 +2,8 @@
 {-# LANGUAGE InstanceSigs        #-}
 module General
   ( General.id,
-    applyToFive
+    applyToFive,
+    ContT (..)
   )
 where
 
@@ -48,10 +49,28 @@ instance Applicative Cont where
   pure :: a -> Cont a
   -- x :: a
   -- y :: a -> r
-  pure x = Cont (\y -> y x)
+  pure x = Cont ($ x)
   --
   (<*>) :: Cont (a -> b) -> Cont a -> Cont b
   -- x :: ((a -> b) -> r) -> r
   -- y :: (a -> r) -> r
   -- Cont x <*> Cont y = Cont $ (\z -> z $ y (\_ -> x y)) -- ':<
   Cont x <*> Cont y = Cont ($ y (const (x y)))
+
+-- | Exercise 6.4-iii
+-- Provide the `Monad` instances for `Cont`
+instance Monad Cont where
+  return :: a -> Cont a
+  return x = Cont ($ x)
+
+  (>>=) :: Cont a -> (a -> Cont b) -> Cont b
+  -- x :: (a -> r) -> r
+  -- f :: a -> Cont b ~ a -> ((b -> r) -> r)
+  --  Cont x >>= f = x f
+  (>>=) = unCont
+
+------------------------------------------------------------------------------
+
+-- | Exercise 6.4-iv
+-- ContT
+newtype ContT m a = ContT { unCountT :: forall r. (a -> m r) -> m r }
